@@ -4,30 +4,30 @@
 
 #Description : Algorithm that applies the method of Gaussian Elimination to linear systems.
 
-#functionality: adds two vectors, each element one by one and returns the sum.
+#Functionality: adds two vectors, each element one by one and returns the sum.
 def vectorsum(a,b):
     c = []
     for i in range(len(a)):
         c.append(a[i] + b[i])
     return c
 
-#functionality: multiplies a vector by a constant "mult", and returns the new vector.
+#Functionality: multiplies a vector by a constant "mult", and returns the new vector.
 def vectormult(mult,vector):
     c = []
     for i in range(len(vector)):
         c.append(vector[i]*mult)
     return c
 
-#functionality: divides a vector by a constant "div", and returns the new vector.
+#Functionality: divides a vector by a constant "div", and returns the new vector.
 def vectordiv(div,vector):
     c = []
     for i in range(len(vector)):
         c.append(vector[i]/div)
     return c
 
-#functionality: applies the gaussian elimination method, returning the solved matrix.
-#input: the input must be a matrix[n][n+1], where n is any integer > 0.
-#output: this function returns the identity matrix, with the n+1 row being the values of each variable.
+#Functionality: applies the gaussian elimination method, returning the solved matrix.
+#Input: the input must be a matrix[n][n+1], where n is any integer > 0.
+#Output: this function returns the identity matrix, with the n+1 row being the values of each variable.
 def elimgauss(matrix):
     n = len(matrix)
     #Firstly, this method "eliminates" the values in the lower triangle of the matrix.
