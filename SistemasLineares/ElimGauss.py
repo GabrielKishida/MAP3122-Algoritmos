@@ -25,6 +25,11 @@ def vectordiv(div,vector):
         c.append(vector[i]/div)
     return c
 
+def switchlines(matrix,line1,line2):
+    auxvector = matrix[line1]
+    matrix[line1] = matrix[line2]
+    matrix[line2] = auxvector
+
 #Functionality: applies the gaussian elimination method, returning the solved matrix.
 #Input: the input must be a matrix[n][n+1], where n is any integer > 0.
 #Output: this function returns the identity matrix, with the n+1 row being the values of each variable.
@@ -32,10 +37,20 @@ def elimgauss(matrix):
     n = len(matrix)
     #Firstly, this method "eliminates" the values in the lower triangle of the matrix.
     for i in range(n):
+        if(matrix[i][i] == 0):
+            allZeroes = True
+            for k in range(i+1,n):
+                if(matrix[i][k] != 0):
+                    switchlines(matrix,i,k)
+                    allZeroes = False
+                    break
+            if (allZeroes): return "System not solvable"
         for j in range(i+1,n):
+            if (matrix[i][i] == 0 ): return "System not solvable"
             coef = -(matrix[j][i]/matrix[i][i])
             auxvector = vectormult(coef,matrix[i])
             matrix[j] = vectorsum(matrix[j],auxvector)
+    if (matrix[n-1][n-1] == 0): return "System not solvable"
     matrix[n-1] = vectordiv(matrix[n-1][n-1],matrix[n-1])
     #Then, this method works bottom-up, eliminating the values in the upper triangle of the matrix.
     for i in range(n-1,-1,-1):
@@ -50,5 +65,6 @@ def elimgauss(matrix):
     return matrix
 
 #Example test to which the algorithm runs.
-matrix = [[1,-1,2,2],[2,1,-1,1],[-2,-5,3,3]]
+matrix = [[1,1,2,0,1],[2,-1,0,1,-2],[1,-1,-1,-2,4],[2,-1,2,-1,0]]
 print(elimgauss(matrix))
+print("Expected values: x1 = 1, x2 = 2, x3 = -1, x4 = -2")
