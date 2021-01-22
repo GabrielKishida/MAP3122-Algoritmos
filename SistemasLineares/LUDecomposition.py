@@ -22,14 +22,24 @@ def lineElimination(matrix,lineMaintained,lineEliminated):
         matrix[lineEliminated] = matrix[lineEliminated] + matrix[lineMaintained]*coef
 
 #Functionality: receives decomposition lu and answers b to the linear system, and solves it.
-#Still under development
+#This is probably optimizable. I've made several "for i in range(n)" statements that can be reduced.
 def luSolver(l,u,b,n) :
     lb = np.zeros((n,n+1))
     for i in range(n) :
         lb[i] = np.hstack((l[i],b[i]))
-    #for i in range(n):
-        #for j in range(i+1,n):
-            #lineElimination(lb,i,j)
+    for i in range(n) :
+        for j in range(i+1,n) :
+            lineElimination(lb,i,j)
+    ux = np.zeros((n,n+1))
+    x = np.zeros(n)
+    for i in range(n) :
+        ux[i] = np.hstack((u[i],lb[i][n]))
+    for i in range(n-1,-1,-1):
+        for j in range(i-1,-1,-1):
+            lineElimination(ux,i,j)
+        ux[i] =  ux[i]/ux[i][i]
+        x[i] = ux[i][n]
+    return x
 
 #Functionality: this function receives a matrix (n)x(n+1) and solves it using LU decomposition.
 def luDecomposition(matrix) :
@@ -51,9 +61,8 @@ def luDecomposition(matrix) :
     b = np.zeros(n)
     for i in range(n):
         b[i] = matrix[i][n]
-    print(l)
-    print(u)
+    return luSolver(l,u,b,n)    
 
-matrix = np.array([[1.,1.,0.,3.,4.],[2.0,1.,-1.,1.,1.],[3.,-1.,-1.,2.,-3.],[-1.,2.,3.,-1., 4.]])
-luDecomposition(matrix)
-
+matrix = np.array([[1.0,1.0,2.0,0.0,1.0],[2.0,-1.0,0.0,1.0,-2.0],[1.0,-1.0,-1.0,-2.0,4.0],[2.0,-1.0,2.0,-1.0, 0.0]])
+print("Expected values: x1 = 1, x2 = 2, x3 = -1, x4 = -2")
+print(luDecomposition(matrix))  
