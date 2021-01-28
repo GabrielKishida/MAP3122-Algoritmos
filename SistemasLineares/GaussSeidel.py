@@ -6,7 +6,31 @@
 
 import numpy as np
 
+def sassenfeld(A):
+    n = len(A)
+    M = A
+    b = []
+    sum1 = 0.
+    for i in range(1,n):
+        sum1 += abs(A[0][i])
+    sum1 = sum2 = 0.
+    b.append(sum1/abs(A[0][0]))
+    for i in range(1,n):
+        for j in range(i):
+            sum1 += abs(M[i][j]*b[j])
+        for j in range(i+1,n):
+            sum2 += abs(M[i][j])
+        b.append((sum1+sum2)/abs(M[i][i]))
+        sum1 = sum2 = 0
+    
+    if (max(b) < 1):
+        return True
+    else:
+        return False
+
 def gaussSeidel(A,x,maxIter,Err) :
+    if(sassenfeld(A)):
+        print("Converge de acordo com Sassenfeld.")
     n = len(A)
     newx = x.copy()
     var = np.array([])
@@ -29,7 +53,7 @@ def gaussSeidel(A,x,maxIter,Err) :
             elif (x[i] == 0):
                 var = np.append(var,0)
         maxval = np.amax(var)
-        print("erro atual : ",maxval)
+        print("Erro da interacao ", k, " : ",maxval)
         if (maxval <= Err):
             break
         else:
@@ -40,4 +64,4 @@ def gaussSeidel(A,x,maxIter,Err) :
 matrix = np.array([[5.,3.,15.],[-4.,10.,19.]])
 print(matrix)
 x = np.array((1.,1.))
-gaussSeidel(matrix,x,100,0.00001)
+gaussSeidel(matrix,x,100,0.001)
