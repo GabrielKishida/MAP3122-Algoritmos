@@ -4,22 +4,32 @@ import matplotlib.pyplot as plt
 
 dir = "EP1/EP1_dados/"
 
-def seidel(a, x ,b): 
-    #Finding length of a(3)        
-    n = len(a)                    
-    # for loop for 3 times as to calculate x, y , z 
-    for j in range(0, n):         
-        # temp variable d to store b[j] 
-        d = b[j]                   
-          
-        # to calculate respective xi, yi, zi 
-        for i in range(0, n):      
-            if(j != i): 
-                d-=a[j][i] * x[i] 
-        # updating the value of our solution         
-        x[j] = d / a[j][j] 
-    # returning our updated solution            
-    return x 
+def seidel(a, x, b, maxIter, err):       
+    n = len(a)
+    newx = x.copy()                 
+    for k in range(0,maxIter) :
+        var = np.array([])
+        for i in range(0, n):         
+            # temp variable d to store b[j] 
+            d = b[i]                   
+            for j in range(0, n):      
+                if(i != j): 
+                    d-=a[i][j] * newx[j] 
+            # updating the value of our solution         
+            newx[i] = d / a[i][i] 
+        # returning our updated solution  
+        for i in range (n) :
+            if (newx[i] != 0) :
+                var = np.append(var,abs((newx[i]-x[i])/newx[i]))
+            elif (x[i] != 0) :
+                var = np.append(var,1)  
+            elif (x[i] == 0) :
+                var = np.append(var,0)
+        maxval = np.amax(var)
+        if(maxval < err) :
+            break
+        x = newx.copy()    
+    return newx 
 
 def addDelta(a,delta) :
     n = len(a)
@@ -56,12 +66,12 @@ def solveImage(dir,imNumber) :
         print(delta)
         A_Atdelta = addDelta(A,delta)
         f = np.ones(n*n)
-        for k in range(0,1000) :
-            f = seidel(A_Atdelta,f,Atp)
+        f = seidel(A_Atdelta,f,Atp,1000,0.001)
         for j in range (0,n) :
             for k in range (0,n) :
                 plotmap[k][j] = f[n*j + k] 
         plt.imshow(plotmap)
         plt.show()
     return
+
 solveImage(dir,1)
