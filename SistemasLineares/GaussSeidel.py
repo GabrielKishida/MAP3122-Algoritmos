@@ -31,6 +31,9 @@ def sassenfeld(A):
 def gaussSeidel(A,x,maxIter,Err) :
     if(sassenfeld(A)):
         print("Converge de acordo com Sassenfeld.")
+    else :
+        print("Nao converge.")
+        return
     n = len(A)
     newx = x.copy()
     var = np.array([])
