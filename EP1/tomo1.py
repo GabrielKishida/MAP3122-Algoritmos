@@ -66,12 +66,14 @@ def solveImage(dir,imNumber) :
         print(delta)
         A_Atdelta = addDelta(A,delta)
         f = np.ones(n*n)
-        f = seidel(A_Atdelta,f,Atp,1000,0.001)
+        f = seidel(A_Atdelta,f,Atp,100,0.001)
         for j in range (0,n) :
             for k in range (0,n) :
                 plotmap[k][j] = f[n*j + k] 
+        plt.subplot(1,3,i+4)
         plt.imshow(plotmap)
-        plt.show()
+        plt.title("Gráfico com delta " + str(delta),fontsize=10)
+    plt.show()
     return
 
-solveImage(dir,1)
+solveImage(dir,3)
