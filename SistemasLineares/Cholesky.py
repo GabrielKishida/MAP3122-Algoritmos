@@ -29,6 +29,6 @@ def choleskyDecomposition(A) :
         L[i][i] = math.sqrt(A[i][i] - choleskySquareSum(L,i))
     return L
 
-A = np.array([[4., 12., -16.],[12., 37., -43.],[-16., -43., 98.]])
+A = np.array([[4., -2., -6.],[-2., 10., 9.],[-6., 9., 14.]])
 print(A)
 print(choleskyDecomposition(A))

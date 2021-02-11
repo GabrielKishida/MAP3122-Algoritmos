@@ -32,7 +32,6 @@ def elimgauss(matrix):
                 if(matrix[i][k] != 0):
                     switchLines(matrix,i,k)
                     print("switchline")
-                    print(matrix)
                     allZeroes = False
                     break
             if (allZeroes): return "System not solvable"
@@ -78,7 +77,6 @@ def pivotalElimGauss(matrix):
 
 
 #Example test to which the algorithm runs.
-matrix = np.array([[1.0,1.0,2.0,0.0,1.0],[2.0,-1.0,0.0,1.0,-2.0],[1.0,-1.0,-1.0,-2.0,4.0],[2.0,-1.0,2.0,-1.0, 0.0]])
+matrix = np.array([[0.0, 2.0, 3.0, 1.5],[4.0, 2.0, 0.0, -2.0],[2.0, 2.0, 0.0, 0.0]])
 print(matrix)
 print(pivotalElimGauss(matrix))
-print("Expected values: x1 = 1, x2 = 2, x3 = -1, x4 = -2")

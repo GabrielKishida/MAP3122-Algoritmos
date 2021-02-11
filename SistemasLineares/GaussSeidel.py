@@ -31,6 +31,9 @@ def sassenfeld(A):
 def gaussSeidel(A,x,maxIter,Err) :
     if(sassenfeld(A)):
         print("Converge de acordo com Sassenfeld.")
+    else :
+        print("Nao converge.")
+        return
     n = len(A)
     newx = x.copy()
     var = np.array([])
@@ -42,12 +45,11 @@ def gaussSeidel(A,x,maxIter,Err) :
                     sum -= A[i][j] * newx[j]
                 else :
                     sum += A[i][n]
-            newx[i] = sum/A[i][i]
-        print(newx)
+            newx[i] = float("{:.8f}".format(sum/A[i][i]))
         
         for i in range(0,n) :
             if (newx[i] != 0):
-                var = np.append(var,abs(newx[i] - x[i])/abs(x[i]))
+                var = np.append(var,abs(newx[i] - x[i])/abs(newx[i]))
             elif (x[i] != 0):
                 var = np.append(var,1)
             elif (x[i] == 0):
@@ -55,13 +57,15 @@ def gaussSeidel(A,x,maxIter,Err) :
         maxval = np.amax(var)
         print("Erro da interacao ", k, " : ",maxval)
         if (maxval <= Err):
+            print("Erro aceitavel:", newx)
             break
         else:
             x = newx.copy()
             var = np.array([])
+    return newx
 
 #Example test to which the algorithm runs.
-matrix = np.array([[5.,3.,15.],[-4.,10.,19.]])
+matrix = np.array([[4.0, 2.0, 0.0, -2.0],[2.0, 2.0, 0.0, 0.0],[0.0, 2.0, 3.0, 1.5]])
 print(matrix)
-x = np.array((1.,1.))
-gaussSeidel(matrix,x,100,0.001)
+x = np.array((-1., 1., -0.17))
+print(gaussSeidel(matrix,x,1,0.01))
