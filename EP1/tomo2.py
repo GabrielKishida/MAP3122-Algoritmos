@@ -62,37 +62,42 @@ def buildMatrixA(n) :
 
 def calculateDet(dir) :
     for i in range(1,4) :
-        p1 = load(dir + "im" + str(i) + "/p1.npy")
+        p1 = load(dir + "im" + str(i) + "/p2.npy")
         n = int(len(p1)/2)
         A = buildMatrixA(n)
         for j in range(-4,0,1) :
             if(j == -4) : delta = 0
             else : delta = pow(10,j)
             det = np.longdouble(np.linalg.det(addDelta(A,delta)))
-            print("O determinante para a imagem " + str(i) + " com delta " + str(delta) + " é: " +str(det))
+            print("O determinante para a imagem " + str(i) + " de tamanho " + str(n)+  " com delta " + str(delta) + " é: " +str(det))
+
+def plotOriginal(dir,imNumber) :
+    original = plt.imread(dir + "im" + str(imNumber) + "/im" + str(imNumber) + ".png")
+    plt.subplot(1,4,1)
+    plt.imshow(original)
+    plt.title("Gráfico original",fontsize=7)
+
 
 def solveImage(dir,imNumber) :
-    p1 = load(dir + "im" + str(imNumber) + "/p1.npy")
-    n = int(len(p1)/2)
+    plotOriginal(dir,imNumber)
+    p2 = load(dir + "im" + str(imNumber) + "/p2.npy")
+    n = int((len(p2) + 2)/6)
     A = buildMatrixA(n)
-    Atp = np.matmul(A.transpose(),p1)
+    Atp = np.matmul(np.transpose(A),p2)
     plotmap = np.zeros((n,n))
     for i in range(-3,0,1) :
         delta = pow(10,i)
-        print(delta)
         A_Atdelta = addDelta(A,delta)
+        #f = np.matmul(np.linalg.inv(A_Atdelta),Atp)
         f = np.ones(n*n)
-        f = seidel(A_Atdelta,f,Atp,100,0.001)
+        f = seidel(A_Atdelta,f,Atp,100,0)
         for j in range (0,n) :
             for k in range (0,n) :
                 plotmap[k][j] = f[n*j + k] 
-        plt.subplot(1,3,i+4)
+        plt.subplot(1,4,i+5)
         plt.imshow(plotmap)
-        plt.title("Gráfico com delta " + str(delta),fontsize=10)
+        plt.title("Gráfico com delta " + str(delta),fontsize=7)
     plt.show()
     return
 
-A = buildMatrixA(3)
-A = addDelta(A,0.1)
-plt.imshow(A)
-plt.show()
+solveImage(dir,1)

@@ -54,7 +54,15 @@ def calculateDet(dir) :
             det = np.longdouble(np.linalg.det(addDelta(A,delta)))
             print("O determinante para a imagem " + str(i) + " com delta " + str(delta) + " é: " +str(det))
 
+def plotOriginal(dir,imNumber) :
+    original = plt.imread(dir + "im" + str(imNumber) + "/im" + str(imNumber) + ".png")
+    plt.subplot(1,4,1)
+    plt.imshow(original)
+    plt.title("Gráfico original",fontsize=7)
+
+
 def solveImage(dir,imNumber) :
+    plotOriginal(dir,imNumber)
     p1 = load(dir + "im" + str(imNumber) + "/p1.npy")
     n = int(len(p1)/2)
     A = buildMatrixA(n)
@@ -62,17 +70,16 @@ def solveImage(dir,imNumber) :
     plotmap = np.zeros((n,n))
     for i in range(-3,0,1) :
         delta = pow(10,i)
-        print(delta)
         A_Atdelta = addDelta(A,delta)
         f = np.ones(n*n)
         f = seidel(A_Atdelta,f,Atp,100,0.001)
         for j in range (0,n) :
             for k in range (0,n) :
                 plotmap[k][j] = f[n*j + k] 
-        plt.subplot(1,3,i+4)
+        plt.subplot(1,4,i+5)
         plt.imshow(plotmap)
-        plt.title("Gráfico com delta " + str(delta),fontsize=10)
+        plt.title("Gráfico com delta " + str(delta),fontsize=7)
     plt.show()
     return
 
-solveImage(dir,3)
+solveImage(dir,1)
