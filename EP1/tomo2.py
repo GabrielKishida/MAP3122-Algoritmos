@@ -36,12 +36,29 @@ def addDelta(a,delta) :
     At_A = np.matmul(transposed,a)
     return At_A + delta*np.identity(len(At_A))
 
+def buildLowerA(n,B) :
+    C = np.zeros((1,n))
+    E = np.identity(n)
+    A = np.array([[]])
+    A1 = B.copy()
+    for j in range (n) :
+        for i in range(n) :
+            if (i == 0) : pass
+            elif(E[j][i] == 1) : A1 = np.vstack((A1,B))
+            else : A1 = np.vstack((A1,C))
+        if (j == 0) : A = A1.copy()
+        else : A = np.hstack((A,A1))
+        A1 = C.copy()
+    return A
+
 def buildMatrixA(n) :
     B = np.ones(n)
     C = np.identity(n)
     A1 = np.kron(B,C)
     A2 = np.kron(C,B)
-    return np.array(np.concatenate((A1,A2),axis=0),dtype='float64')
+    A3 = buildLowerA(n,np.flip(np.identity(n),0))
+    A4 = buildLowerA(n,np.identity(n))
+    return np.array(np.concatenate((A1,A2,A3,A4),axis=0),dtype='float64')
 
 def calculateDet(dir) :
     for i in range(1,4) :
@@ -75,4 +92,7 @@ def solveImage(dir,imNumber) :
     plt.show()
     return
 
-solveImage(dir,3)
+A = buildMatrixA(3)
+A = addDelta(A,0.1)
+plt.imshow(A)
+plt.show()
