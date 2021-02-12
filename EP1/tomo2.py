@@ -1,8 +1,9 @@
 import numpy as np
 from numpy import load
 import matplotlib.pyplot as plt
+import sys
 
-dir = "EP1/EP1_dados/"
+dir = "EP1_dados/"
 
 def seidel(a, x, b, maxIter, err):       
     n = len(a)
@@ -71,8 +72,8 @@ def calculateDet(dir) :
             det = np.longdouble(np.linalg.det(addDelta(A,delta)))
             print("O determinante para a imagem " + str(i) + " de tamanho " + str(n)+  " com delta " + str(delta) + " é: " +str(det))
 
-def plotOriginal(dir,imNumber) :
-    original = plt.imread(dir + "im" + str(imNumber) + "/im" + str(imNumber) + ".png")
+def plotOriginal(dir,imageNum) :
+    original = plt.imread(dir + imageNum + "/" + imageNum + ".png")
     n = len(original)
     plt.subplot(1,4,1)
     plt.imshow(original)
@@ -84,9 +85,9 @@ def plotOriginal(dir,imNumber) :
     return f
 
 
-def solveImage(dir,imNumber) :
-    fOriginal = plotOriginal(dir,imNumber)
-    p2 = load(dir + "im" + str(imNumber) + "/p2.npy")
+def solveImage(dir,imageNum) :
+    fOriginal = plotOriginal(dir,imageNum)
+    p2 = load(dir + imageNum + "/p2.npy")
     n = int((len(p2) + 2)/6)
     A = buildMatrixA(n)
     Atp = np.matmul(np.transpose(A),p2)
@@ -102,10 +103,11 @@ def solveImage(dir,imNumber) :
                 plotmap[k][j] = f[n*j + k] 
         fErr = fOriginal - f
         err = 100*(np.sqrt(np.matmul(fErr,fErr))/np.sqrt(np.matmul(fOriginal,fOriginal)))
-        print(err)
+        print("Erro para delta de " + str(delta) + " : " + str(err) )
         plt.subplot(1,4,i+5)
         plt.imshow(plotmap)
         plt.title("Gráfico com delta " + str(delta),fontsize=7)
     plt.show()
 
-solveImage(dir,2)
+imageNum = str(sys.argv[1])
+solveImage(dir,imageNum)
