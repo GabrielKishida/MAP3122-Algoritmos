@@ -148,5 +148,6 @@ def solveImage(dir,imageNum) :
         plt.title("Gráfico com delta " + str(delta),fontsize=7)
     plt.show()                                          # Apresenta ao usuario os graficos obtidos
 
-imageNum = str(sys.argv[1])
-solveImage(dir,imageNum)
+### Funcao Main ###
+imageNum = str(sys.argv[1])     # Obtem o numero da imagem a ser analisada a partir dos argumentos
+solveImage(dir,imageNum)        # Resolve a imagem a ser analisada
