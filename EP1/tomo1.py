@@ -7,8 +7,8 @@ dir = "EP1_dados/"
 
 def seidel(a, x, b, maxIter, err):       
     n = len(a)
-    newx = x.copy()                 
-    for k in range(0,maxIter) :
+    newx = x.copy()                
+    while(maxIter > 0) :
         var = np.array([])
         for i in range(0, n):         
             # temp variable d to store b[j] 
@@ -29,7 +29,8 @@ def seidel(a, x, b, maxIter, err):
         maxval = np.amax(var)
         if(maxval < err) :
             break
-        x = newx.copy()    
+        x = newx.copy()  
+        maxIter -= 1  
     return newx 
 
 def addDelta(a,delta) :
