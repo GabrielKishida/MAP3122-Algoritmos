@@ -73,13 +73,19 @@ def calculateDet(dir) :
 
 def plotOriginal(dir,imNumber) :
     original = plt.imread(dir + "im" + str(imNumber) + "/im" + str(imNumber) + ".png")
+    n = len(original)
     plt.subplot(1,4,1)
     plt.imshow(original)
     plt.title("Gráfico original",fontsize=7)
+    f = np.zeros(n*n)
+    for j in range(n):
+        for i in range(n):
+            f[n*j + i] = original[i][j]
+    return f
 
 
 def solveImage(dir,imNumber) :
-    plotOriginal(dir,imNumber)
+    fOriginal = plotOriginal(dir,imNumber)
     p2 = load(dir + "im" + str(imNumber) + "/p2.npy")
     n = int((len(p2) + 2)/6)
     A = buildMatrixA(n)
@@ -94,10 +100,12 @@ def solveImage(dir,imNumber) :
         for j in range (0,n) :
             for k in range (0,n) :
                 plotmap[k][j] = f[n*j + k] 
+        fErr = fOriginal - f
+        err = 100*(np.sqrt(np.matmul(fErr,fErr))/np.sqrt(np.matmul(fOriginal,fOriginal)))
+        print(err)
         plt.subplot(1,4,i+5)
         plt.imshow(plotmap)
         plt.title("Gráfico com delta " + str(delta),fontsize=7)
     plt.show()
-    return
 
-solveImage(dir,1)
+solveImage(dir,2)
