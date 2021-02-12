@@ -56,6 +56,25 @@ def addDelta(a,delta) :
     At_A = np.matmul(transposed,a)              # Multiplica 'a' transposta por 'a'
     return At_A + delta*np.identity(len(At_A))  # Retorna a soma 'at_a' + delta*identidade 
 
+# Nome: buildLowerA
+# Parametros: variavel - n, matriz modelo - B
+# Funcao: A partir de uma matriz modelo 'B', cria uma matriz para compor a matriz A da equacao
+# Af = p , que sera utilizada para resolver o sistema linear.
+def buildLowerA(n,B) :
+    C = np.zeros((1,n))                                     # Matriz auxiliar C
+    E = np.identity(n)                                      # Matriz identidade E
+    A = np.array([[]])                                      # Matriz a ser devolvida A
+    A1 = B.copy()                                           # Matriz A1 parcial de A
+    for j in range (n) :
+        for i in range(n) :
+            if (i == 0) : pass
+            elif(E[j][i] == 1) : A1 = np.vstack((A1,B))
+            else : A1 = np.vstack((A1,C))
+        if (j == 0) : A = A1.copy()
+        else : A = np.hstack((A,A1))
+        A1 = C.copy()
+    return A
+
 # Nome: buildMatrixA
 # Parametros: parametro para o tamanho - n 
 # Funcao: A partir de um numero inteiro n, cria a matriz 'A' que correlaciona os raios 'p' com
@@ -63,9 +82,11 @@ def addDelta(a,delta) :
 def buildMatrixA(n) :
     B = np.ones(n)
     C = np.identity(n)
-    A1 = np.kron(B,C)       #A1 e A2 sao as matrizes para os raios horizontais e verticais
-    A2 = np.kron(C,B)
-    return np.array(np.concatenate((A1,A2),axis=0),dtype='float64') # Retorna a matriz concatenada de A1 e A2
+    A1 = np.kron(B,C)                               # A1 e A2 sao as matrizes para os raios
+    A2 = np.kron(C,B)                               # horizontais e verticais.
+    A3 = buildLowerA(n,np.flip(np.identity(n),0))   # A3 e A4 sao para os raios diagonais.
+    A4 = buildLowerA(n,np.identity(n))
+    return np.array(np.concatenate((A1,A2,A3,A4),axis=0),dtype='float64')
 
 # Nome: calculateDet
 # Parametros: dir - diretorio dos dados
@@ -73,8 +94,8 @@ def buildMatrixA(n) :
 # addDelta. Serve para analisar como o determinante cresce para maiores valores de delta
 def calculateDet(dir) :
     for i in range(1,4) :                              # Itera sobre as imagens 1, 2 e 3
-        p = load(dir + "im" + str(i) + "/p1.npy")      # Recebe o vetor p
-        n = int((len(p))/2)                            # Calcula n a partir do tamanho de p
+        p = load(dir + "im" + str(i) + "/p2.npy")      # Recebe o vetor p
+        n = int((len(p) + 2)/6)                        # Calcula n a partir do tamanho de p
         A = buildMatrixA(n)                            # Constroi a matriz A a partir de n
         for j in range(-4,0,1) :                       # Calcula o determinante para diferentes valores
             if(j == -4) : delta = 0                    # de Delta
@@ -105,28 +126,28 @@ def plotOriginal(dir,imageNum) :
 # Além disso, plota os valores para diferentes deltas, e imprime o erro de cada f obtido.
 def solveImage(dir,imageNum) :
     fOriginal = plotOriginal(dir,imageNum) # Carrega o f original a partir da imagem fornecida
-    p1 = load(dir + imageNum + "/p1.npy")  # Carrega os raios da tomografia p
-    n = int(len(p1)/2)                     # Calcula n a partir do tamanho do vetor p
+    p2 = load(dir + imageNum + "/p2.npy")  # Carrega os raios da tomografia p
+    n = int((len(p2) + 2)/6)               # Calcula n a partir do tamanho do vetor p
     A = buildMatrixA(n)                    # Constrói a matriz A para o valor n obtido
-    Atp = np.matmul(A.transpose(),p1)      # Multiplica a A_t pelo vetor p, para o sistema linear
+    Atp = np.matmul(np.transpose(A),p2)    # Multiplica a A_t pelo vetor p, para o sistema linear
     plotmap = np.zeros((n,n))              # Prepara o mapa a ser plotado.
     for i in range(-3,0,1) :               # Itera para diferentes valores de delta
         delta = pow(10,i)
-        A_Atdelta = addDelta(A,delta)               # Calcula A_Atdelta para o valor de delta
-        f = np.ones(n*n)                            # Assume que a primeira resposta de f é um vetor de 1
-        f = gaussSeidel(A_Atdelta,f,Atp,100,0.001)  # Aplica o algoritmo de Gauss Seidel 100 vezes
+        A_Atdelta = addDelta(A,delta)                   # Calcula A_Atdelta para o valor de delta
+        #f = np.matmul(np.linalg.inv(A_Atdelta),Atp)
+        f = np.ones(n*n)                                # Assume que a primeira resposta de f é um vetor de 1
+        f = gaussSeidel(A_Atdelta,f,Atp,100,0)          # Aplica o algoritmo de Gauss Seidel 100 vezes
         for j in range (0,n) :
             for k in range (0,n) :
-                plotmap[k][j] = f[n*j + k]          # Constroi o plotmap a partir do f obtido
-        fErr = fOriginal - f                        # Constroi o vetor do erro de f
+                plotmap[k][j] = f[n*j + k]              # Constroi o plotmap a partir do f obtido
+        fErr = fOriginal - f                            # Constroi o vetor do erro de f
         err = 100*(np.sqrt(np.matmul(fErr,fErr))/np.sqrt(np.matmul(fOriginal,fOriginal)))   # Calcula o erro relativo ao original
         print("Erro para delta de " + str(delta) + " : " + str(err) )   # Imprime o valor de erro para cada delta
-        plt.subplot(1,4,i+5)               # Plota o grafico da imagem obtida
+        plt.subplot(1,4,i+5)                            # Plota o grafico da imagem obtida
         plt.imshow(plotmap)
         plt.title("Gráfico com delta " + str(delta),fontsize=7)
-    plt.show()                             # Apresenta ao usuario os graficos obtidos
-    return
+    plt.show()                                          # Apresenta ao usuario os graficos obtidos
 
 ### Funcao Main ###
 imageNum = str(sys.argv[1])     # Obtem o numero da imagem a ser analisada a partir dos argumentos
-solveImage(dir,imageNum)        # Resolve a imagem a ser analisada 
+solveImage(dir,imageNum)        # Resolve a imagem a ser analisada
