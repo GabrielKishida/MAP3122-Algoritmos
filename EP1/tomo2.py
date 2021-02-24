@@ -134,7 +134,7 @@ def solveImage(dir,imageNum) :
     for i in range(-3,0,1) :               # Itera para diferentes valores de delta
         delta = pow(10,i)
         A_Atdelta = addDelta(A,delta)                   # Calcula A_Atdelta para o valor de delta
-        #f = np.matmul(np.linalg.inv(A_Atdelta),Atp)
+        #f = np.matmul(np.linalg.inv(A_Atdelta),Atp)    # Resolve o sistema de forma mais rapida, usando a matriz inversa
         f = np.ones(n*n)                                # Assume que a primeira resposta de f é um vetor de 1
         f = gaussSeidel(A_Atdelta,f,Atp,100,0)          # Aplica o algoritmo de Gauss Seidel 100 vezes
         for j in range (0,n) :
